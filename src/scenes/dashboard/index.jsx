@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
+import { useNavigate } from "react-router-dom";
+// import Cookies from "js-cookie"
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
@@ -11,8 +13,10 @@ import BarChart from "../../components/BarChart";
 import PieChart from "../../components/PieChart";
 import StatBox from "../../components/StatBox";
 import ProgressCircle from "../../components/ProgressCircle";
+import {useGlobalContext} from "../../context/Context"
 
 const Dashboard = () => {
+  const {token}=useGlobalContext()
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [progress, setFeesProgress] = useState(0);
@@ -20,13 +24,42 @@ const Dashboard = () => {
   const [totalApplicant, setTotalApplicant] = useState(0);
 
   useEffect(() => {
-    const fetchFeesData = async () => {
+    // const fetchFeesData = async () => {
+    //   try {
+    //     const response = await fetch(
+    //       "http://localhost:3005/admin/get-all-applicants"
+    //       ,{
+    //         headers:{"Authorization":`Bearer ${token}`},
+    //         // credentials: 'include',
+    //       }
+    //     );
+    //     const data = await response.json();
+    //     console.log("Fees Data:", data);
+    //     for (let i = 0; i < data.length; i++) {
+    //       if (data[i].feeStatus === "paid") {
+    //         setFeesProgress(i + 1);
+    //         if (data.length > progress) {
+    //           setUnpaidFees(data.length - progress);
+    //         } else {
+    //           setUnpaidFees(0);
+    //         }
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.log("Error", error);
+    //   }
+    // };
+    console.log("Token From Index Page",token)
+    const getAllApplicantData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3005/admin/get-all-applicants"
+          "http://localhost:3005/admin/get-all-applicants",
+          {
+            headers:{"Authorization":`Bearer ${token}`}
+          }
         );
         const data = await response.json();
-        console.log("Fees Data:", data);
+        console.log("Total Applicant Data:", data);
         for (let i = 0; i < data.length; i++) {
           if (data[i].feeStatus === "paid") {
             setFeesProgress(i + 1);
@@ -37,26 +70,14 @@ const Dashboard = () => {
             }
           }
         }
-      } catch (error) {
-        console.log("Error", error);
-      }
-    };
-
-    const getAllApplicantData = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:3005/admin/get-all-applicants"
-        );
-        const data = await response.json();
-        console.log("Total Applicant Data:", data);
         setTotalApplicant(data.length);
       } catch (error) {
         console.log("Error", error);
       }
     };
-    fetchFeesData();
+    // fetchFeesData()
     getAllApplicantData();
-  }, []);
+  }, [token]);
   return (
     <Box m="20px">
       {/* HEADER */}

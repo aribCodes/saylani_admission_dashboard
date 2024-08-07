@@ -1,11 +1,13 @@
 import React,{ useEffect,useState } from "react";
 import Chart from "react-apexcharts";
+import { useGlobalContext } from "../context/Context";
 // import { useTheme } from "@mui/material";
 // import { ResponsiveBar } from "@nivo/bar";
 // import { tokens } from "../theme";
 // import { mockBarData as data } from "../data/mockData";
 // { isDashboard = false }
 const BarChart = () => {
+  const {token}=useGlobalContext()
   const [courseData,setCourseData]=useState([])
   const [courseNames,setCourseNames]=useState([])
   const [totalEnrollStudent,setTotalEnrollStudent]=useState([])
@@ -16,7 +18,9 @@ const BarChart = () => {
     const subjectName=[]
     const fetchData=async()=>{
       try {
-        const response=await fetch('http://localhost:3005/admin/get-all-courses');
+        const response=await fetch('http://localhost:3005/admin/get-all-courses',{
+          headers:{"Authorization":`Bearer ${token}`}
+        });
         const data=await response.json()
         for(let i=0;i<data.length;i++){
           totalStudent.push(data[i].applicant.length)

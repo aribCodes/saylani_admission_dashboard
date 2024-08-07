@@ -2,8 +2,11 @@ import {useEffect,useState} from "react"
 import { ResponsivePie } from "@nivo/pie";
 import { tokens } from "../theme";
 import { useTheme } from "@mui/material";
+import {useGlobalContext} from "../context/Context"
+
 
 const PieChart = () => {
+  const {token}=useGlobalContext()
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [courseNames, setCourseNames] = useState([]);
@@ -12,7 +15,9 @@ const PieChart = () => {
       const subjectName=[]
       try {
         const response = await fetch(
-          "http://localhost:3005/admin/get-all-applicants"
+          "http://localhost:3005/admin/get-all-applicants",{
+            headers:{"Authorization":`Bearer ${token}`}
+          }
         );
         const data = await response.json();
         for (let i = 0; i < data.length; i++) {

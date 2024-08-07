@@ -15,18 +15,23 @@ import Geography from "./scenes/geography";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 import Calendar from "./scenes/calendar/calendar";
+import { useGlobalContext } from "./context/Context";
 
 function Dash() {
+  const {token}=useGlobalContext()
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
+
   useEffect(()=>{
     (async()=>{
-      const response = await fetch("http://localhost:3005/applicant/get-courses");
+      const response = await fetch("http://localhost:3005/applicant/get-courses",{
+        headers:{"Authorization":`Bearer ${token}`}
+      });
       const data = await response.json();
       console.log("courses:",data);
 
     })()
-  })
+  },[token])
 
   return (
     <ColorModeContext.Provider value={colorMode}>

@@ -1,14 +1,20 @@
-import React, { useState } from "react";
-import "./LoginPage.css";
-import { FaUser, FaLock } from "react-icons/fa";
-import image from "../assets/SaylaniPref.png";
+import React, { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaUser, FaLock } from "react-icons/fa";
+import "./LoginPage.css";
+import image from "../assets/SaylaniPref.png";
+import { useGlobalContext } from "../context/Context";
 
 const LoginPage = () => {
+  const { token, setToken,isAuthenticated } = useGlobalContext();
   const navigate = useNavigate();
-  // const [name,setName]=useState()
   const [password, setPassword] = useState("");
-  const [token, setToken] = useState("");
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/admin");
+    }
+  }, [isAuthenticated, navigate]);
 
   const style = {
     backgroundImage: `url(${image})`,
@@ -19,6 +25,15 @@ const LoginPage = () => {
     width: "100vw",
   };
 
+  function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+      const date = new Date();
+      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  }
   const handleSubmit = (e) => {
     e.preventDefault();
   };
@@ -31,7 +46,7 @@ const LoginPage = () => {
           email: "admin@gmail.com",
           password: password,
         }),
-        credentials: 'include',
+        credentials: "include",
       })
         .then((response) => {
           return response.json();
@@ -39,17 +54,16 @@ const LoginPage = () => {
         .then((data) => {
           console.log("Uploaded Data", data);
           setToken(data.token);
+          if (data.token) {
+            setCookie("JWT_TOKEN", data.token, 3);
+            navigate("/admin");
+          } else {
+            navigate("/");
+          }
         });
-      if (token) {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
     } catch (error) {
       console.log("Error", error);
     }
-
-    // navigate("/admin")
   };
 
   return (
